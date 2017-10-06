@@ -1,74 +1,3 @@
-
-
-% model.t - contains layer thickness
-% model.ss - contains stacking sequence
-
-
-% Need a function which calculates Bphi
-
-function [G1,	G2] = computeGs(model,G13,G23,G13i,G23i)
-	G1 = 0.0; G1 = 0.0;
-	for k = 1 : 2 : model.numPly
-		phi = model.ss(k);
-		Q11k = (cos(phi) ^ 2) * G13 + (sin(phi) ^ 2) * G23;
-		Q22k = (cos(phi) ^ 2) * G23 + (sin(phi) ^ 2) * G13;
-		G1 = G1 + model.t(k) / Q11k;
-		G2 = G2 + model.t(k) / Q22k
-	end
-	for k = 2 : 2 : model.numPly % For the interfaces
-		G1 = G1 + model.t(k) / G11i
-		G2 = G2 + model.t(k) / G22i
-	end
-	G1 = G1 / sum(model.t); G2 = G2 / sum(model.t);
-	G1 = 1 / G1; G2 = 1 / G2;
-end
-
-function [beta1,	beta2] = computeBetas(k,G1,G2,G13,G23,G13i,G23i,model)
-	if (model.ss(k) < 0.0) % It is an interface
-		beta1 = G1 / G13i - 1.0;
-		beta2 = G2 / G23i - 1.0;
-	else
-		phi = model.ss(k);
-		Q11k = (cos(phi) ^ 2) * G13 + (sin(phi) ^ 2) * G23;
-		Q22k = (cos(phi) ^ 2) * G23 + (sin(phi) ^ 2) * G13;
-		beta1 = G1 / Q11k - 1.0;
-		beta2 = G2 / Q22k - 1.0;
-	end
-end
-
-
-function B = calB_phi(z,k,G13,G12,G13i,G23i,model)
-	B = zeros(3,7);
-	[phi1,	phi2] = calPhi(z,k,G13,G12,G13i,G23i,model)
-	B(1,1) = z; B(1,2) = phi1;
-	B(2,3) = z; B(2,4) = phi2;
-	B(3,5) = z; B(3,6) = phi1; B(3,7) = phi2;
-end
-
-function [phi1,	phi2] = calPhi(z,k,G13,G12,model):
-	% Note that this is a linear function in z
-	h = 0.5 * sum(model.t);
-	phi = model.ss(k);
-	Q11k = (cos(phi) ^ 2) * G13 + (sin(phi) ^ 2) * G23;
-	Q22k = (cos(phi) ^ 2) * G23 + (sin(phi) ^ 2) * G13;
-	phi1 = (z + h) * (G1 / Q11k - 1.0)
-	phi2 = (z + h) * (G2 / Q22k - 1.0)
-	if (k > 0)
-		for i = 2 : model.numPly
-			phi = model.ss(i);
-			if(phi < 0.0)
-				Q11i = G13i;
-				Q22i = G23i;
-			else		
-				Q11i = (cos(phi) ^ 2 * G13) + (sin(phi) ^ 2) * G23;
-				Q22i = (cos(phi) ^ 2 * G23) + (sin(phi) ^ 2) * G13;
-			end
-			phi1 = phi1 +  model.t(i-1) * (G1 / Q11i - G1 / Q11k)
-			phi2 = phi2 +  model.t(i-1) * (G2 / Q22i - G2 / Q22k)
-		end
-	end
-end
-
 function [A, B, D, H] = constructZigZagMatrices(model)
 
 
@@ -174,6 +103,75 @@ end % end for each ply
 end
 
 
+
+% model.t - contains layer thickness
+% model.ss - contains stacking sequence
+
+
+% Need a function which calculates Bphi
+
+function [G1,	G2] = computeGs(model,G13,G23,G13i,G23i)
+	G1 = 0.0; G1 = 0.0;
+	for k = 1 : 2 : model.numPly
+		phi = model.ss(k);
+		Q11k = (cos(phi) ^ 2) * G13 + (sin(phi) ^ 2) * G23;
+		Q22k = (cos(phi) ^ 2) * G23 + (sin(phi) ^ 2) * G13;
+		G1 = G1 + model.t(k) / Q11k;
+		G2 = G2 + model.t(k) / Q22k
+	end
+	for k = 2 : 2 : model.numPly % For the interfaces
+		G1 = G1 + model.t(k) / G11i
+		G2 = G2 + model.t(k) / G22i
+	end
+	G1 = G1 / sum(model.t); G2 = G2 / sum(model.t);
+	G1 = 1 / G1; G2 = 1 / G2;
+end
+
+function [beta1,	beta2] = computeBetas(k,G1,G2,G13,G23,G13i,G23i,model)
+	if (model.ss(k) < 0.0) % It is an interface
+		beta1 = G1 / G13i - 1.0;
+		beta2 = G2 / G23i - 1.0;
+	else
+		phi = model.ss(k);
+		Q11k = (cos(phi) ^ 2) * G13 + (sin(phi) ^ 2) * G23;
+		Q22k = (cos(phi) ^ 2) * G23 + (sin(phi) ^ 2) * G13;
+		beta1 = G1 / Q11k - 1.0;
+		beta2 = G2 / Q22k - 1.0;
+	end
+end
+
+
+function B = calB_phi(z,k,G13,G12,G13i,G23i,model)
+	B = zeros(3,7);
+	[phi1,	phi2] = calPhi(z,k,G13,G12,G13i,G23i,model)
+	B(1,1) = z; B(1,2) = phi1;
+	B(2,3) = z; B(2,4) = phi2;
+	B(3,5) = z; B(3,6) = phi1; B(3,7) = phi2;
+end
+
+function [phi1,	phi2] = calPhi(z,k,G13,G12,G13i,G23i,model)
+	% Note that this is a linear function in z
+	h = 0.5 * sum(model.t);
+	phi = model.ss(k);
+	Q11k = (cos(phi) ^ 2) * G13 + (sin(phi) ^ 2) * G23;
+	Q22k = (cos(phi) ^ 2) * G23 + (sin(phi) ^ 2) * G13;
+	phi1 = (z + h) * (G1 / Q11k - 1.0)
+	phi2 = (z + h) * (G2 / Q22k - 1.0)
+	if (k > 0)
+		for i = 2 : model.numPly
+			phi = model.ss(i);
+			if(phi < 0.0)
+				Q11i = G13i;
+				Q22i = G23i;
+			else		
+				Q11i = (cos(phi) ^ 2 * G13) + (sin(phi) ^ 2) * G23;
+				Q22i = (cos(phi) ^ 2 * G23) + (sin(phi) ^ 2) * G13;
+			end
+			phi1 = phi1 +  model.t(i-1) * (G1 / Q11i - G1 / Q11k)
+			phi2 = phi2 +  model.t(i-1) * (G2 / Q22i - G2 / Q22k)
+		end
+	end
+end
 
 
 
