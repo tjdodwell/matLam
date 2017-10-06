@@ -3,7 +3,7 @@ function model = modelSetup
 model.plotme = true;
 model.vtk_filename_base = 'solution_';
 
-model.type = 'timoshenko';
+model.type = 'Mindlin';
 
 model.Lx = 10.0; % Length (x dimension)
 model.Ly = 5.0; % Width (y dimension)

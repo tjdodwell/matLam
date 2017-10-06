@@ -80,27 +80,27 @@ end % for each refinelement
 
 msh.nnod        = size(msh.coords,1);
 msh.nel         = size(msh.elements,1);
-
 msh.ndim        = 2;
 
-if (strcmp('zigzag_reduced',model.type))
-	msh.dof = 5;
-else
-	msh.dof = 3; % Default is Timoshenko
+switch lower(model.type)
+	case 'mindlin'
+		msh.dof = 5;
+	case 'zigzag'
+		msh.dof = 7;
 end
 
-
-
-msh.dof         = 3;
 msh.nnodel      = 4; % Nodes per Element
 msh.nedof       = msh.nnodel*msh.dof;
 msh.tdof        = msh.dof*msh.nnod;
 
 
+% Setup local to global number of general element formulation with msh.dof degrees of freedom per node.
 msh.e2g = zeros(msh.nel,msh.nedof);
-
-for ie = 1:msh.nel % For each element
-		msh.e2g(ie,:) = [msh.elements(ie,:),msh.nnod + msh.elements(ie,:),2*msh.nnod + msh.elements(ie,:)];
+for ie = 1 : msh.nel
+	ne = msh.elements(ie,:);
+	for j = 1 : msh.dof
+		msh.e2g(ie,(j-1)*length(ne) + 1: j * length(ne)) = (j-1) * msh.nnod + ne;
+	end
 end
 
 [msh.nip,msh.IP_X, msh.IP_w]    = ip_quad(model.integrationOption);                   

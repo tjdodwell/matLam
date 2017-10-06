@@ -1,4 +1,4 @@
-function [A,B,D,H] = makeABDH2(model)
+function mat = makeABDH2(model)
 
 
 % upper and lower coordinates
@@ -48,5 +48,7 @@ end
 
 A = A(1:3,1:3); B = B(1:3,1:3); D = D(1:3,1:3);
 H = H(4:5,4:5);
+
+mat.A = A; mat.B = B; mat.D = D; mat.H = H;
 
 end
