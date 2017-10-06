@@ -7,5 +7,3 @@ Visualisation is done using open-source code paraview (https://www.paraview.org)
 
 
 
-
-
