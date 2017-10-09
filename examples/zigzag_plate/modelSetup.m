@@ -1,9 +1,9 @@
 function model = modelSetup
 
 model.plotme = true;
-model.vtk_filename_base = 'solution_';
+model.vtk_filename_base = 'results/solution_';
 
-model.type = 'Mindlin';
+model.type = 'zigzag';
 
 model.Lx = 10.0; % Length (x dimension)
 model.Ly = 5.0; % Width (y dimension)
@@ -13,6 +13,9 @@ model.Ly = 5.0; % Width (y dimension)
 model.numPly = 1; % number of plys
 model.t = [0.2];
 model.ss	 = [0.0];
+
+model.material.G13i = 2.0;
+model.material.G23i = 2.0;
 
 model.material.E1 = 130; % kN/mm^2
 model.material.E2 = 9.25; % kN/mm^2

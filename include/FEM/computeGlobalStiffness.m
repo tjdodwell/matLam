@@ -34,7 +34,7 @@ switch lower(model.type)
 
     case 'zigzag'
         for ie = 1:msh.nel
-            Ke_all(:, ie) = MindlinPlateElement(msh,mat);
+            Ke_all(:, ie) = ZigZagPlateElement(ie,msh,mat);
         end
 
 end

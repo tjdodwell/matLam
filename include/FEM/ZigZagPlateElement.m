@@ -28,11 +28,8 @@ for ip = 1:4
         B(3,1 : ne) = dNdX(:,2);
         B(3,ne + 1 : 2 * ne) = dNdX(:,1);
 
-
         B(4,3*ne + 1 : 4*ne) = dNdX(:,1); % dtx / dx
-        B(5,5*ne + 1 : 6*ne) = dNdX(:,1); %dpsi_1/dx
-
-
+        B(5,5*ne + 1 : 6*ne) = dNdX(:,1); % dpsi_1/dx
 
         B(6,4*ne + 1 : 5*ne) = dNdX(:,2); % dty / dy
         B(7,6*ne + 1 : 7*ne) = dNdX(:,2); % dpsi_2/dy
@@ -42,7 +39,6 @@ for ip = 1:4
 
         B(9,5*ne + 1 : 6*ne) = dNdX(:,2);
         B(10,6*ne + 1 : 7*ne) = dNdX(:,1);
-
         
         % Compute element stiffness matrices:
       
